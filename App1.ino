@@ -2,7 +2,7 @@
 //
 
 #define CORE_CLK                72000000
-#define TIMER_CLK			    24000000
+#define TIMER_CLK               24000000
 
 #define OFF                     0x0
 #define MARK                    0x4
@@ -195,51 +195,51 @@ namespace VIP2262
 
 void _pwm(uint16_t pin, uint32_t frequency, double duty)
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-	pinMode(pin, AF_OUTPUT_PUSHPULL);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    pinMode(pin, AF_OUTPUT_PUSHPULL);
 
     TIM_TypeDef *p = PIN_MAP[pin].timer_peripheral;
 
-	if (p == TIM2)
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-	else if (p == TIM3)
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-	else if (p == TIM4)
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+    if (p == TIM2)
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    else if (p == TIM3)
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+    else if (p == TIM4)
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
 
-	const uint16_t TIM_ARR = (uint16_t)(TIMER_CLK / frequency) - 1;
+    const uint16_t TIM_ARR = (uint16_t)(TIMER_CLK / frequency) - 1;
 
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure = { 0 };
-	TIM_TimeBaseStructure.TIM_Period = TIM_ARR;
-	TIM_TimeBaseStructure.TIM_Prescaler = (uint16_t)(CORE_CLK / TIMER_CLK) - 1;
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInit(p, &TIM_TimeBaseStructure);
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure = { 0 };
+    TIM_TimeBaseStructure.TIM_Period = TIM_ARR;
+    TIM_TimeBaseStructure.TIM_Prescaler = (uint16_t)(CORE_CLK / TIMER_CLK) - 1;
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    TIM_TimeBaseInit(p, &TIM_TimeBaseStructure);
 
-	TIM_OCInitTypeDef TIM_OCInitStructure = { 0 };
-	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OCInitStructure.TIM_Pulse = (uint16_t)((TIM_ARR + 1) * duty);
+    TIM_OCInitTypeDef TIM_OCInitStructure = { 0 };
+    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+    TIM_OCInitStructure.TIM_Pulse = (uint16_t)((TIM_ARR + 1) * duty);
 
-	if (PIN_MAP[pin].timer_ch == TIM_Channel_1) {
-		TIM_OC1Init(p, &TIM_OCInitStructure);
-		TIM_OC1PreloadConfig(p, TIM_OCPreload_Enable);
-	}
-	else if (PIN_MAP[pin].timer_ch == TIM_Channel_2) {
-		TIM_OC2Init(p, &TIM_OCInitStructure);
-		TIM_OC2PreloadConfig(p, TIM_OCPreload_Enable);
-	}
-	else if (PIN_MAP[pin].timer_ch == TIM_Channel_3) {
-		TIM_OC3Init(p, &TIM_OCInitStructure);
-		TIM_OC3PreloadConfig(p, TIM_OCPreload_Enable);
-	}
-	else if (PIN_MAP[pin].timer_ch == TIM_Channel_4) {
-		TIM_OC4Init(p, &TIM_OCInitStructure);
-		TIM_OC4PreloadConfig(p, TIM_OCPreload_Enable);
-	}
+    if (PIN_MAP[pin].timer_ch == TIM_Channel_1) {
+        TIM_OC1Init(p, &TIM_OCInitStructure);
+        TIM_OC1PreloadConfig(p, TIM_OCPreload_Enable);
+    }
+    else if (PIN_MAP[pin].timer_ch == TIM_Channel_2) {
+        TIM_OC2Init(p, &TIM_OCInitStructure);
+        TIM_OC2PreloadConfig(p, TIM_OCPreload_Enable);
+    }
+    else if (PIN_MAP[pin].timer_ch == TIM_Channel_3) {
+        TIM_OC3Init(p, &TIM_OCInitStructure);
+        TIM_OC3PreloadConfig(p, TIM_OCPreload_Enable);
+    }
+    else if (PIN_MAP[pin].timer_ch == TIM_Channel_4) {
+        TIM_OC4Init(p, &TIM_OCInitStructure);
+        TIM_OC4PreloadConfig(p, TIM_OCPreload_Enable);
+    }
 
-	TIM_ARRPreloadConfig(p, ENABLE);
-	TIM_Cmd(p, ENABLE);
+    TIM_ARRPreloadConfig(p, ENABLE);
+    TIM_Cmd(p, ENABLE);
 }
 
 volatile uint8_t _r = 0;
